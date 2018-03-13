@@ -6,16 +6,23 @@ pipeline {
     
   }
   stages {
-    stage('Stage1') {
+    stage('Bring Up Grid') {
+      steps {
+        sh '''docker run -d -p 4444:4444 --name selenium-hub selenium/hub
+docker run -d --link selenium-hub:hub selenium/node-chrome
+docker run -d --link selenium-hub:hub selenium/node-firefox'''
+      }
+    }
+    stage('Test') {
       parallel {
-        stage('Stage1') {
+        stage('Test') {
           steps {
-            sh 'docker run -e MODULE=order-module.xml -e BROWSER=firefox -e SELENIUM_HUB=172.17.0.1 vinsdocker/containertest:demo'
+            sh 'docker run -e MODULE=order-module.xml -e BROWSER=firefox -e SELENIUM_HUB=selenium-hub vinsdocker/containertest:demo'
           }
         }
-        stage('Stage 2') {
+        stage('') {
           steps {
-            sh 'docker run -e MODULE=order-module.xml -e BROWSER=chrome -e SELENIUM_HUB=172.17.0.1 vinsdocker/containertest:demo'
+            sh 'docker run -e MODULE=order-module.xml -e BROWSER=chrome -e SELENIUM_HUB=selenium-hub vinsdocker/containertest:demo'
           }
         }
       }
