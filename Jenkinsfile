@@ -1,5 +1,10 @@
 pipeline {
-  agent any
+  agent {
+    node {
+      label 'Mint'
+    }
+    
+  }
   stages {
     stage('Stage1') {
       parallel {
